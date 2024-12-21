@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { assets } from '../assets/frontend_assets/assets';
 
 const Login = ({ onLogin }) => {
@@ -14,11 +14,13 @@ const Login = ({ onLogin }) => {
 
     // Dummy email for testing
     const dummyEmail = 'test@example.com';
-    const dummyPassword = 'password123';
+    const dummyPassword = '123';
 
     if (email === dummyEmail && password === dummyPassword) {
       console.log('Login successful');
-      onLogin({ email: dummyEmail, name: 'Test User' });
+      if (typeof onLogin === 'function') {
+        onLogin({ email: dummyEmail, name: 'Test User' });
+      }
       navigate('/');
     } else {
       setError('Invalid email or password');
@@ -71,9 +73,8 @@ const Login = ({ onLogin }) => {
               </div>
             </div>
 
-            {error && <p className="text-red-600 text-sm">{error}</p>}
-
             <div>
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <button
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
@@ -82,6 +83,7 @@ const Login = ({ onLogin }) => {
               </button>
             </div>
           </form>
+
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
