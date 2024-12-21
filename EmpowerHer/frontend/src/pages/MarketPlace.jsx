@@ -10,7 +10,7 @@ const staticProducts = [
     name: "Handwoven Shawl",
     description: "Beautiful handwoven shawl made with traditional techniques",
     price: 2500,
-    image: "/images/shawl.jpg",
+    image: "./assets/images/shawl.jpg",
     category: "Textiles"
   },
   {
