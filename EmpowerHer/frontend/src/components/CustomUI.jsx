@@ -106,3 +106,34 @@ export const Progress = ({ value, max }) => (
     {value}%
   </progress>
 );
+
+// Alert components
+export const Alert = ({ children, type = "info", ...props }) => {
+  const typeStyles = {
+    info: "bg-blue-50 text-blue-800 border-blue-200",
+    success: "bg-green-50 text-green-800 border-green-200",
+    warning: "bg-yellow-50 text-yellow-800 border-yellow-200",
+    error: "bg-red-50 text-red-800 border-red-200",
+  };
+
+  return (
+    <div
+      {...props}
+      className={`p-4 border rounded-md ${typeStyles[type]} flex items-start`}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const AlertTitle = ({ children, ...props }) => (
+  <h3 {...props} className="font-bold text-md mb-1">
+    {children}
+  </h3>
+);
+
+export const AlertDescription = ({ children, ...props }) => (
+  <p {...props} className="text-sm">
+    {children}
+  </p>
+);

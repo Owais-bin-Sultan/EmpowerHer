@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, Alert, AlertDescription, AlertTitle } from "../components/CustomUI";
+import { Loader2 } from 'lucide-react';
 
 const AddProduct = () => {
   const [productData, setProductData] = useState({
@@ -7,8 +9,12 @@ const AddProduct = () => {
     description: '',
     price: '',
     category: '',
-    image: null
+    imageUrl: '',
+    stock: '', // Added stock
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -19,19 +25,39 @@ const AddProduct = () => {
     }));
   };
 
-  const handleImageChange = (e) => {
-    setProductData(prevData => ({
-      ...prevData,
-      image: e.target.files[0]
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the data to your backend
-    console.log('Submitting product:', productData);
-    // Redirect to the marketplace or user's products page
-    navigate('/marketplace');
+    setLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    // Sending data without FormData since we no longer have file upload
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/products', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json', // Since we're sending JSON
+        },
+        body: JSON.stringify(productData), // Sending JSON data
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+
+      const data = await response.json();
+      console.log('Product added:', data);
+      setSuccess(true);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,45 +65,55 @@ const AddProduct = () => {
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
         <div className="px-4 py-5 sm:p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Add New Product</h1>
+          {error && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+          {success && (
+            <Alert className="mb-4">
+              <AlertTitle>Success</AlertTitle>
+              <AlertDescription>Product added successfully! Redirecting...</AlertDescription>
+            </Alert>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">Product Name</label>
-              <input
+              <Label htmlFor="name">Product Name</Label>
+              <Input
                 type="text"
                 name="name"
                 id="name"
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                 value={productData.name}
                 onChange={handleChange}
               />
             </div>
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
-              <textarea
+              <Label htmlFor="description">Description</Label>
+              <Textarea
                 name="description"
                 id="description"
                 rows="3"
                 required
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                 value={productData.description}
                 onChange={handleChange}
-              ></textarea>
+              />
             </div>
             <div>
-              <label htmlFor="price" className="block text-sm font-medium text-gray-700">Price (PKR)</label>
-              <input
+              <Label htmlFor="price">Price (PKR)</Label>
+              <Input
                 type="number"
                 name="price"
                 id="price"
                 required
                 min="0"
                 step="0.01"
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
                 value={productData.price}
                 onChange={handleChange}
               />
             </div>
+           
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
               <select
@@ -97,24 +133,32 @@ const AddProduct = () => {
               </select>
             </div>
             <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700">Product Image</label>
-              <input
-                type="file"
-                name="image"
-                id="image"
-                accept="image/*"
+              <Label htmlFor="imageUrl">Product Image URL</Label>
+              <Input
+                type="text"
+                name="imageUrl"
+                id="imageUrl"
                 required
-                className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                onChange={handleImageChange}
+                value={productData.imageUrl}
+                onChange={handleChange}
               />
             </div>
             <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-              >
-                Add Product
-              </button>
+              <Label htmlFor="stock">Stock</Label>
+              <Input
+                type="number"
+                name="stock"
+                id="stock"
+                required
+                min="0"
+                value={productData.stock}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <Button type="submit" disabled={loading}>
+                {loading ? <Loader2 className="animate-spin" /> : 'Add Product'}
+              </Button>
             </div>
           </form>
         </div>
@@ -124,4 +168,3 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
-

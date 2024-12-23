@@ -29,6 +29,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/mentorship', mentorshipRoutes);
+// app.use('/api/products', productRoutes);
 
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

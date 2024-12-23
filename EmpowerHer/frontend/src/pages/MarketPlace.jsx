@@ -2,78 +2,9 @@ import React, { useState, useEffect } from "react";
 import { MagnifyingGlassIcon, FunnelIcon } from "@heroicons/react/20/solid";
 import { useCart } from "../contexts/CartContext.jsx";
 
-
-// Static product data
-const staticProducts = [
-  {
-    id: 1,
-    name: "Handwoven Shawl",
-    description: "Beautiful handwoven shawl made with traditional techniques",
-    price: 2500,
-    image: "./assets/images/shawl.jpg",
-    category: "Textiles"
-  },
-  {
-    id: 2,
-    name: "Organic Spice Mix",
-    description: "A blend of organic spices perfect for traditional Pakistani cuisine",
-    price: 350,
-    image: "/images/spices.jpg",
-    category: "Food"
-  },
-  {
-    id: 3,
-    name: "Embroidered Cushion Cover",
-    description: "Intricately embroidered cushion cover showcasing Pakistani craftsmanship",
-    price: 800,
-    image: "/images/cushion-cover.jpg",
-    category: "Home Decor"
-  },
-  {
-    id: 4,
-    name: "Traditional Jewelry Set",
-    description: "Elegant jewelry set inspired by traditional Pakistani designs",
-    price: 3500,
-    image: "/images/jewelry-set.jpg",
-    category: "Jewelry"
-  },
-  {
-    id: 5,
-    name: "Hand-painted Ceramic Vase",
-    description: "Beautifully hand-painted ceramic vase with intricate patterns",
-    price: 1200,
-    image: "/images/ceramic-vase.jpg",
-    category: "Home Decor"
-  },
-  {
-    id: 6,
-    name: "Leather Handbag",
-    description: "Handcrafted leather handbag with traditional motifs",
-    price: 4000,
-    image: "/images/leather-handbag.jpg",
-    category: "Accessories"
-  },
-  {
-    id: 7,
-    name: "Handmade Soap Set",
-    description: "Set of natural, handmade soaps with Pakistani herbs and fragrances",
-    price: 600,
-    image: "/images/soap-set.jpg",
-    category: "Beauty"
-  },
-  {
-    id: 8,
-    name: "Traditional Wall Art",
-    description: "Hand-painted wall art featuring traditional Pakistani scenes",
-    price: 2800,
-    image: "/images/wall-art.jpg",
-    category: "Home Decor"
-  }
-];
-
 const Marketplace = () => {
-  const [products] = useState(staticProducts);
-  const [filteredProducts, setFilteredProducts] = useState(staticProducts);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [categories, setCategories] = useState(['All']);
@@ -82,13 +13,28 @@ const Marketplace = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    const uniqueCategories = ['All', ...new Set(staticProducts.map(product => product.category))];
-    setCategories(uniqueCategories);
+    fetchProducts();
   }, []);
 
   useEffect(() => {
     filterProducts();
   }, [searchTerm, priceRange, selectedCategory, products]);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/products');
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+        const uniqueCategories = ['All', ...new Set(data.map(product => product.category))];
+        setCategories(uniqueCategories);
+      } else {
+        console.error('Failed to fetch products');
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
   const filterProducts = () => {
     let filtered = products.filter(product => 
@@ -171,7 +117,7 @@ const Marketplace = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {filteredProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
+          <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:scale-105">
             <img src={product.image} alt={product.name} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h3 className="text-lg font-semibold mb-2 text-purple-800">{product.name}</h3>

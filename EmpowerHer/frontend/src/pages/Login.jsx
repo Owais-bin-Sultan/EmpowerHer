@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/frontend_assets/assets';
 
 const Login = ({ onLogin }) => {
@@ -8,22 +8,35 @@ const Login = ({ onLogin }) => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Dummy email for testing
-    const dummyEmail = 'test@example.com';
-    const dummyPassword = '123';
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (email === dummyEmail && password === dummyPassword) {
-      console.log('Login successful');
-      if (typeof onLogin === 'function') {
-        onLogin({ email: dummyEmail, name: 'Test User' });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Login successful');
+        if (typeof onLogin === 'function') {
+          onLogin({ email: data.email, name: data.name });
+        }
+        // Store the token in localStorage
+        localStorage.setItem('token', data.token);
+        navigate('/');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Invalid email or password');
       }
-      navigate('/');
-    } else {
-      setError('Invalid email or password');
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred. Please try again.');
     }
   };
 
@@ -139,4 +152,3 @@ const Login = ({ onLogin }) => {
 };
 
 export default Login;
-

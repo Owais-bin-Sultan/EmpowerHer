@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { assets } from '../assets/frontend_assets/assets';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,15 +12,51 @@ const Register = () => {
     password: '',
     confirmPassword: '',
   });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign up logic here
-    console.log('Sign up submitted', formData);
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords don't match");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          dateOfBirth: formData.dateOfBirth,
+          businessDetails: formData.businessDetails,
+          password: formData.password,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Registration successful', data);
+        // Store the token in localStorage
+        localStorage.setItem('token', data.token);
+        // Redirect to the dashboard or home page
+        navigate('/');
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || 'Registration failed');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      setError('An error occurred. Please try again.');
+    }
   };
 
   return (
@@ -137,6 +174,8 @@ const Register = () => {
                 />
               </div>
             </div>
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <div>
               <button
