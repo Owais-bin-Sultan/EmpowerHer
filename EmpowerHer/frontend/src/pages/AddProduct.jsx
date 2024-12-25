@@ -9,7 +9,7 @@ const AddProduct = () => {
     description: '',
     price: '',
     category: '',
-    imageUrl: '',
+    image: '',
     stock: '', // Added stock
   });
   const [loading, setLoading] = useState(false);
@@ -133,13 +133,13 @@ const AddProduct = () => {
               </select>
             </div>
             <div>
-              <Label htmlFor="imageUrl">Product Image URL</Label>
+              <Label htmlFor="image">Product Image URL</Label>
               <Input
                 type="text"
-                name="imageUrl"
-                id="imageUrl"
+                name="image"
+                id="image"
                 required
-                value={productData.imageUrl}
+                value={productData.image}
                 onChange={handleChange}
               />
             </div>
