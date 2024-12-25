@@ -12,6 +12,7 @@ router.get('/', async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
+  console.log('GET /api/products');
 });
 
 // Get user's products
@@ -23,6 +24,7 @@ router.get('/my-products', auth, async (req, res) => {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
+  console.log('GET /api/products');
 });
 
 // Add a new product

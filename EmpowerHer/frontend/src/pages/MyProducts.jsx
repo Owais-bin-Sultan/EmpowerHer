@@ -32,6 +32,7 @@ const MyProducts = () => {
     } finally {
       setLoading(false);
     }
+    console.log("MYPRODUCT apiiii");
   };
 
   const handleInputChange = (e) => {

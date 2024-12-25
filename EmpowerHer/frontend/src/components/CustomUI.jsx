@@ -137,3 +137,39 @@ export const AlertDescription = ({ children, ...props }) => (
     {children}
   </p>
 );
+// Table Components
+export const Table = ({ children, className }) => (
+  <table className={`table-auto border-collapse w-full ${className}`}>
+    {children}
+  </table>
+);
+
+export const TableHeader = ({ children, className }) => (
+  <thead className={`bg-gray-100 ${className}`}>
+    {children}
+  </thead>
+);
+
+export const TableHead = ({ children, className }) => (
+  <th className={`px-4 py-2 text-left border-b ${className}`}>
+    {children}
+  </th>
+);
+
+export const TableBody = ({ children, className }) => (
+  <tbody className={className}>
+    {children}
+  </tbody>
+);
+
+export const TableRow = ({ children, className }) => (
+  <tr className={`hover:bg-gray-100 ${className}`}>
+    {children}
+  </tr>
+);
+
+export const TableCell = ({ children, className }) => (
+  <td className={`px-4 py-2 border-b ${className}`}>
+    {children}
+  </td>
+);
