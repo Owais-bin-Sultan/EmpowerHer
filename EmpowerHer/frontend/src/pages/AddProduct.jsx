@@ -11,6 +11,7 @@ const AddProduct = () => {
     category: '',
     image: '',
     stock: '', // Added stock
+    
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

@@ -19,6 +19,7 @@ const MyProducts = () => {
     setError(null);
     try {
       const token = localStorage.getItem('token');
+      console.log('Token:', token);
       if (!token) throw new Error('Authentication required');
 
       const response = await fetch('http://localhost:5000/api/products/my-products', {
