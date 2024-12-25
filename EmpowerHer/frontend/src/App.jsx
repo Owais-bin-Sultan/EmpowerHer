@@ -35,7 +35,7 @@ function App() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setUser(null);
-    navigate('/');
+    navigate('/home');
     // Add any additional logout logic here (e.g., clearing tokens, redirecting)
   };
 
