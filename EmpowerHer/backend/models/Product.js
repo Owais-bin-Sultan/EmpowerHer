@@ -3,27 +3,33 @@ const mongoose = require('mongoose');
 const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   description: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   price: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   stock: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   image: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   category: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
@@ -37,4 +43,3 @@ const ProductSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('Product', ProductSchema);
-
