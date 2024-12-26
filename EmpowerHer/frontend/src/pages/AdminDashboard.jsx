@@ -2,107 +2,105 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "../components/CustomUI";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/CustomUI";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/CustomUI";
-import { useNavigate } from 'react-router-dom';
+import { Badge } from "../components/CustomUI";
+import { CheckCircle, XCircle } from 'lucide-react';
+import axios from 'axios';
 
 const AdminDashboard = () => {
-  const [pendingUsers, setPendingUsers] = useState([]);
-  const navigate = useNavigate();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchPendingUsers();
+    fetchUsers();
   }, []);
 
-  const fetchPendingUsers = async () => {
+  const fetchUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/auth/pending-users', {
+      setLoading(true);
+      const response = await axios.get('http://localhost:5000/api/users', {
         headers: {
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      if (response.ok) {
-        const data = await response.json();
-        setPendingUsers(data);
-      } else {
-        throw new Error('Failed to fetch pending users');
-      }
-    } catch (error) {
-      console.error('Error:', error);
+      setUsers(response.data);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error fetching users');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleApprove = async (userId) => {
+  const handleApproval = async (userId, approve) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/auth/approve-user/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`
+      await axios.put(`http://localhost:5000/api/users/${userId}/approve`, 
+        { approved: approve },
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
-      });
-      if (response.ok) {
-        fetchPendingUsers();
-      } else {
-        throw new Error('Failed to approve user');
-      }
-    } catch (error) {
-      console.error('Error:', error);
+      );
+      fetchUsers();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Error updating user approval');
     }
   };
 
-  const handleReject = async (userId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:5000/api/auth/reject-user/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (response.ok) {
-        fetchPendingUsers();
-      } else {
-        throw new Error('Failed to reject user');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>Admin Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <h2 className="text-xl font-semibold mb-4">Pending User Approvals</h2>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Actions</TableHead>
+    <Card className="w-full max-w-4xl mx-auto my-8">
+      <CardHeader>
+        <CardTitle>Admin Dashboard</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {users.map((user) => (
+              <TableRow key={user._id}>
+                <TableCell>{user.name}</TableCell>
+                <TableCell>{user.email}</TableCell>
+                <TableCell>
+                  <Badge variant={user.approved ? "success" : "warning"}>
+                    {user.approved ? "Approved" : "Pending"}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {!user.approved ? (
+                    <Button 
+                      onClick={() => handleApproval(user._id, true)} 
+                      size="sm" 
+                      className="mr-2"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-2" /> Approve
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={() => handleApproval(user._id, false)} 
+                      size="sm" 
+                      variant="destructive"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" /> Revoke
+                    </Button>
+                  )}
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {pendingUsers.map((user) => (
-                <TableRow key={user._id}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                    <Button onClick={() => handleApprove(user._id)} className="mr-2">Approve</Button>
-                    <Button onClick={() => handleReject(user._id)} variant="destructive">Reject</Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 };
 

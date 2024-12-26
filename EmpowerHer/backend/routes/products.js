@@ -25,10 +25,22 @@ router.get('/my-products', auth, async (req, res) => {
 
     const products = await Product.find({ user: userId });
     console.log('Products found:', products.length);
+    localStorage.setItem('products', products.length);
     res.json(products);
   } catch (error) {
     console.error('Error fetching user products:', error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Get products for a specific user by userId
+router.get('/user/:userId', auth, async (req, res) => {
+  try {
+    const products = await Product.find({ user: req.params.userId });
+    res.json(products);
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    res.status(500).json({ message: 'Error fetching products' });
   }
 });
 

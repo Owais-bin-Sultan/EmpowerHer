@@ -7,28 +7,26 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   email: {
-    type: String,
+    type: String, 
     required: true,
     unique: true
-  },
-  dateOfBirth: {
-    type: Date,
-    required: true
-  },
-  businessDetails: {
-    type: String,
-    required: true
   },
   password: {
     type: String,
     required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  role: {
+    type: String,
+    enum: ['user', 'admin'],  // Simplified role options
+    default: 'user'
+  },
+  approved: {
+    type: Boolean,
+    default: false
   }
-});
+}, { timestamps: true });  // Add timestamps for createdAt and updatedAt
 
+// Keep existing password hashing middleware
 UserSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
@@ -37,9 +35,9 @@ UserSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// Keep existing password comparison method
 UserSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
 module.exports = mongoose.model('User', UserSchema);
-

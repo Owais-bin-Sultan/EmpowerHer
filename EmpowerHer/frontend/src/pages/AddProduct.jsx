@@ -1,26 +1,36 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Label, Alert, AlertDescription, AlertTitle } from "../components/CustomUI";
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Label, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Alert, AlertDescription, AlertTitle } from "../components/CustomUI";
 import { Loader2 } from 'lucide-react';
 
 const AddProduct = () => {
-  const [productData, setProductData] = useState({
+  const location = useLocation();
+  const navigate = useNavigate();
+  const isEditing = location.state?.isEditing;
+  const editProduct = location.state?.product;
+
+  const [product, setProduct] = useState({
     name: '',
-    description: '',
     price: '',
-    category: '',
+    stock: '',
     image: '',
-    stock: '', // Added stock
-    
+    category: '',
+    description: ''
   });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isEditing && editProduct) {
+      setProduct(editProduct);
+    }
+  }, [isEditing, editProduct]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProductData(prevData => ({
+    setProduct(prevData => ({
       ...prevData,
       [name]: value
     }));
@@ -32,30 +42,32 @@ const AddProduct = () => {
     setError(null);
     setSuccess(false);
 
-    // Sending data without FormData since we no longer have file upload
+    const token = localStorage.getItem("token");
+    
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/products', {
-        method: 'POST',
+      const url = isEditing 
+        ? `http://localhost:5000/api/products/${editProduct._id}`
+        : 'http://localhost:5000/api/products';
+      
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json', // Since we're sending JSON
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(productData), // Sending JSON data
+        body: JSON.stringify(product)
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to add product');
-      }
-
-      const data = await response.json();
-      console.log('Product added:', data);
+      if (!response.ok) throw new Error('Failed to save product');
+      
       setSuccess(true);
       setTimeout(() => {
-        navigate('/');
+        navigate('/my-products');
       }, 2000);
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError(error.message);
     } finally {
       setLoading(false);
     }
@@ -65,7 +77,7 @@ const AddProduct = () => {
     <div className="bg-gray-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
         <div className="px-4 py-5 sm:p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Add New Product</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">{isEditing ? 'Edit Product' : 'Add New Product'}</h1>
           {error && (
             <Alert variant="destructive" className="mb-4">
               <AlertTitle>Error</AlertTitle>
@@ -75,7 +87,7 @@ const AddProduct = () => {
           {success && (
             <Alert className="mb-4">
               <AlertTitle>Success</AlertTitle>
-              <AlertDescription>Product added successfully! Redirecting...</AlertDescription>
+              <AlertDescription>Product {isEditing ? 'updated' : 'added'} successfully! Redirecting...</AlertDescription>
             </Alert>
           )}
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -86,7 +98,7 @@ const AddProduct = () => {
                 name="name"
                 id="name"
                 required
-                value={productData.name}
+                value={product.name}
                 onChange={handleChange}
               />
             </div>
@@ -97,7 +109,7 @@ const AddProduct = () => {
                 id="description"
                 rows="3"
                 required
-                value={productData.description}
+                value={product.description}
                 onChange={handleChange}
               />
             </div>
@@ -110,11 +122,10 @@ const AddProduct = () => {
                 required
                 min="0"
                 step="0.01"
-                value={productData.price}
+                value={product.price}
                 onChange={handleChange}
               />
             </div>
-           
             <div>
               <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
               <select
@@ -122,7 +133,7 @@ const AddProduct = () => {
                 id="category"
                 required
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500"
-                value={productData.category}
+                value={product.category}
                 onChange={handleChange}
               >
                 <option value="">Select a category</option>
@@ -140,7 +151,7 @@ const AddProduct = () => {
                 name="image"
                 id="image"
                 required
-                value={productData.image}
+                value={product.image}
                 onChange={handleChange}
               />
             </div>
@@ -152,13 +163,20 @@ const AddProduct = () => {
                 id="stock"
                 required
                 min="0"
-                value={productData.stock}
+                value={product.stock}
                 onChange={handleChange}
               />
             </div>
-            <div>
+            <div className="flex justify-between">
               <Button type="submit" disabled={loading}>
-                {loading ? <Loader2 className="animate-spin" /> : 'Add Product'}
+                {loading ? <Loader2 className="animate-spin" /> : (isEditing ? 'Update Product' : 'Add Product')}
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={() => navigate('/my-products')}
+              >
+                Cancel
               </Button>
             </div>
           </form>

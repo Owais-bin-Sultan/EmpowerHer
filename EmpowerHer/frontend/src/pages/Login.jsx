@@ -29,6 +29,10 @@ const Login = ({ onLogin }) => {
         }
         // Store the token in localStorage
         localStorage.setItem('token', data.token);
+        console.log('Token stored:', data.token);
+        localStorage.setItem('userId', data.userId);
+        console.log('User ID stored:', data.userId);
+        
         navigate('/');
       } else {
         const errorData = await response.json();

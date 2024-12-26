@@ -75,26 +75,32 @@ export const TabsContent = ({ children, isActive }) => (
 );
 
 // Card components
-export const Card = ({ children, ...props }) => (
-  <div {...props} className="bg-white shadow-md rounded-lg overflow-hidden">
+export const Card = ({ children, className, ...props }) => (
+  <div className={`bg-white shadow rounded-lg ${className}`} {...props}>
     {children}
   </div>
 );
 
-export const CardHeader = ({ children }) => (
-  <div className="p-4 border-b">{children}</div>
+export const CardHeader = ({ children, className, ...props }) => (
+  <div className={`px-4 py-3 border-b ${className}`} {...props}>
+    {children}
+  </div>
 );
 
-export const CardContent = ({ children }) => (
-  <div className="p-4">{children}</div>
+export const CardContent = ({ children, className, ...props }) => (
+  <div className={`p-4 ${className}`} {...props}>
+    {children}
+  </div>
 );
 
-export const CardFooter = ({ children }) => (
-  <div className="p-4 border-t">{children}</div>
+export const CardFooter = ({ className, ...props }) => (
+  <div className={`p-4 border-t flex justify-evenly ${className}`} {...props} />
 );
 
-export const CardTitle = ({ children }) => (
-  <h2 className="text-lg font-semibold mb-2">{children}</h2>
+export const CardTitle = ({ children, className, ...props }) => (
+  <h3 className={`text-lg font-medium text-gray-900 ${className}`} {...props}>
+    {children}
+  </h3>
 );
 
 export const CardDescription = ({ children }) => (
@@ -138,14 +144,14 @@ export const AlertDescription = ({ children, ...props }) => (
   </p>
 );
 // Table Components
-export const Table = ({ children, className }) => (
-  <table className={`table-auto border-collapse w-full ${className}`}>
+export const Table = ({ children, className, ...props }) => (
+  <table className={`min-w-full divide-y divide-gray-200 ${className}`} {...props}>
     {children}
   </table>
 );
 
-export const TableHeader = ({ children, className }) => (
-  <thead className={`bg-gray-100 ${className}`}>
+export const TableHeader = ({ children, className, ...props }) => (
+  <thead className={`bg-gray-50 ${className}`} {...props}>
     {children}
   </thead>
 );
@@ -173,3 +179,19 @@ export const TableCell = ({ children, className }) => (
     {children}
   </td>
 );
+
+export const Badge = ({ variant = 'default', children, className }) => {
+  const variants = {
+    default: 'bg-gray-100 text-gray-800',
+    success: 'bg-green-100 text-green-800',
+    warning: 'bg-yellow-100 text-yellow-800',
+    error: 'bg-red-100 text-red-800',
+    info: 'bg-blue-100 text-blue-800',
+    purple: 'bg-purple-100 text-purple-800'
+  };
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${variants[variant]} ${className}`}>
+      {children}
+    </span>
+  );
+};
