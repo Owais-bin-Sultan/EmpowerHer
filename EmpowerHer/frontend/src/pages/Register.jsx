@@ -7,55 +7,95 @@ const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    dateOfBirth: '',
-    businessDetails: '',
     password: '',
     confirmPassword: '',
+    role: 'user',
+    businessName: '',
+    businessDescription: '',
+    phone: '',
+    address: ''
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateForm = () => {
+    console.log('Validating form data:', formData);
+
+    // Name validation (2-50 chars, letters and spaces)
+    if (!/^[A-Za-z\s]{2,50}$/.test(formData.name)) {
+      console.log('Name validation failed');
+      setError('Name should only contain letters and spaces (2-50 characters)');
+      return false;
+    }
+
+    // Email validation
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      console.log('Email validation failed');
+      setError('Please enter a valid email address');
+      return false;
+    }
+
+    // Phone validation - match User schema validation
+    if (formData.phone && !/^\+?[\d\s-]+$/.test(formData.phone)) {
+      console.log('Phone validation failed');
+      setError('Please enter a valid phone number');
+      return false;
+    }
+
+    // Password validation
+    if (formData.password.length < 6) {
+      console.log('Password length validation failed');
+      setError('Password must be at least 6 characters');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (formData.password !== formData.confirmPassword) {
-      setError("Passwords don't match");
-      return;
-    }
+    setLoading(true);
 
     try {
+      console.log('Submitting registration:', { 
+        ...formData,
+        password: formData.password 
+      });
+
       const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          dateOfBirth: formData.dateOfBirth,
-          businessDetails: formData.businessDetails,
-          password: formData.password,
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password, // Send password directly
+          role: formData.role,
+          businessName: formData.businessName?.trim(),
+          businessDescription: formData.businessDescription?.trim(),
+          phone: formData.phone?.trim(),
+          address: formData.address?.trim()
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Registration successful', data);
-        // Store the token in localStorage
-        localStorage.setItem('token', data.token);
-        // Redirect to the dashboard or home page
-        navigate('/');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Registration failed');
+      const data = await response.json();
+      console.log('Registration response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Registration failed');
       }
-    } catch (error) {
-      console.error('Registration error:', error);
-      setError('An error occurred. Please try again.');
+
+      navigate('/login');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -106,36 +146,85 @@ const Register = () => {
             </div>
 
             <div>
-              <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
-                Date of Birth
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                Role
+              </label>
+              <div className="mt-1">
+                <select
+                  id="role"
+                  name="role"
+                  required
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                  value={formData.role}
+                  onChange={handleChange}
+                >
+                  <option value="user">Regular User</option>
+                  <option value="mentor">Mentor</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="businessName" className="block text-sm font-medium text-gray-700">
+                Business Name (Optional)
               </label>
               <div className="mt-1">
                 <input
-                  id="dateOfBirth"
-                  name="dateOfBirth"
-                  type="date"
-                  required
+                  id="businessName"
+                  name="businessName"
+                  type="text"
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                  value={formData.dateOfBirth}
+                  value={formData.businessName}
                   onChange={handleChange}
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="businessDetails" className="block text-sm font-medium text-gray-700">
-                Business Details
+              <label htmlFor="businessDescription" className="block text-sm font-medium text-gray-700">
+                Business Description (Optional)
               </label>
               <div className="mt-1">
                 <textarea
-                  id="businessDetails"
-                  name="businessDetails"
+                  id="businessDescription"
+                  name="businessDescription"
                   rows="3"
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-                  placeholder="Tell us about your business..."
-                  value={formData.businessDetails}
+                  value={formData.businessDescription}
                   onChange={handleChange}
                 ></textarea>
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                Phone Number
+              </label>
+              <div className="mt-1">
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                  value={formData.phone}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                Address
+              </label>
+              <div className="mt-1">
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
+                  value={formData.address}
+                  onChange={handleChange}
+                />
               </div>
             </div>
 
@@ -153,6 +242,7 @@ const Register = () => {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                   value={formData.password}
                   onChange={handleChange}
+                  minLength="6"
                 />
               </div>
             </div>
@@ -171,6 +261,7 @@ const Register = () => {
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  minLength="6"
                 />
               </div>
             </div>
@@ -181,8 +272,9 @@ const Register = () => {
               <button
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                disabled={loading}
               >
-                Sign up
+                {loading ? 'Registering...' : 'Register'}
               </button>
             </div>
           </form>
@@ -242,4 +334,3 @@ const Register = () => {
 };
 
 export default Register;
-

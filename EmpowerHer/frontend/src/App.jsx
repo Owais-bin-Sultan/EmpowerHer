@@ -6,6 +6,7 @@ import Marketplace from './pages/MarketPlace';
 import AddProduct from './pages/AddProduct';
 import Learning from './pages/Learning';
 import Mentorship from './pages/Mentorship';
+import AdminDashboard from './pages/AdminDashboard';
 import BecomeMentor from './pages/BecomeMentor';
 import ApplyForMentor from './pages/ApplyForMentor';
 import Login from './pages/Login';
@@ -61,6 +62,7 @@ function AppContent() {
         <Route path="/my-trainings" element={<ThankYou />} />
         <Route path="/my-mentorship" element={<MyMentorship />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/mentorship/become-mentor" element={<BecomeMentor />} />
         <Route path="/mentorship/apply" element={<ApplyForMentor />} />
       </Routes>

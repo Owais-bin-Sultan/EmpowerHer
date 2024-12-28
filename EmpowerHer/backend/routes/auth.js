@@ -78,16 +78,16 @@ router.post('/login', loginValidation, async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'User not found!!' });
     }
 
-    if (user.status !== 'approved') {
+    if (user.approved !== true) {
       return res.status(400).json({ message: 'Your account is pending approval' });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Incorrect Password' });
     }
 
     const token = jwt.sign(
@@ -96,9 +96,15 @@ router.post('/login', loginValidation, async (req, res) => {
       { expiresIn: '1d' }
     );
 
+    // Restructured response to match client expectations
     res.json({
       token,
-      user: { id: user._id, name: user.name, email: user.email, role: user.role }
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role || 'user'
+      }
     });
 
   } catch (error) {

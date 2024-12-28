@@ -6,41 +6,90 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const validateInputs = () => {
+    console.log('Validating inputs:', { email });
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Please enter a valid email');
+      return false;
+    }
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
+      if (!validateInputs()) {
+        setLoading(false);
+        return;
+      }
+
+      console.log('Attempting login:', { email });
+
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ 
+          email: email.trim(),
+          password: password.trim() 
+        })
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Login successful');
-        if (typeof onLogin === 'function') {
-          onLogin({ email: data.email, name: data.name });
-        }
-        // Store the token in localStorage
-        localStorage.setItem('token', data.token);
-        console.log('Token stored:', data.token);
-        localStorage.setItem('userId', data.userId);
-        console.log('User ID stored:', data.userId);
-        
-        navigate('/');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Invalid email or password');
+      const data = await response.json();
+      console.log('Server response:', data);
+
+      if (!response.ok) {
+        setError(data.message || 'Login failed');
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('An error occurred. Please try again.');
+
+      // Transform flat response into expected structure
+      const userData = {
+        token: data.token,
+        user: {
+          id: data.userId,
+          name: data.name,
+          email: data.email,
+          role: data.role || 'user'  // Set default role if not provided
+        }
+      };
+
+      try {
+        localStorage.setItem('token', userData.token);
+        localStorage.setItem('user', JSON.stringify(userData.user));
+        localStorage.setItem('userId',userData.user.id);
+        console.log('Userid:',userData.user.id);
+        console.log('Role:',userData.user.role);
+
+        if (onLogin) {
+          onLogin(userData.user);
+        }
+
+        // Navigate based on role
+        navigate(userData.user.role === 'admin' ? '/admin-dashboard' : '/marketplace');
+      } catch (err) {
+        setError('Error processing login');
+        setLoading(false);
+      }
+
+    } catch (err) {
+      console.error('Login error:', err);
+      setError(err.message || 'Failed to login');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -95,8 +144,9 @@ const Login = ({ onLogin }) => {
               <button
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                disabled={loading}
               >
-                Sign in
+                {loading ? 'Logging in...' : 'Sign in'}
               </button>
             </div>
           </form>

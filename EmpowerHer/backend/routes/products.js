@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
+const mongoose = require('mongoose');
 
 // Get all products
 router.get('/', async (req, res) => {
@@ -19,17 +20,25 @@ router.get('/', async (req, res) => {
 router.get('/my-products', auth, async (req, res) => {
   console.log('GET /api/products/my-products');
   try {
-    console.log('User in request:', req.user);
-    const userId = req.query.user || req.user._id; // Prefer query param or fallback to token
+    const userId = req.query.user || req.user._id;
+    
+    // Validate userId format
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      console.error('Invalid user ID format:', userId);
+      return res.status(400).json({ message: 'Invalid user ID format' });
+    }
+
     console.log('Fetching products for user:', userId);
 
-    const products = await Product.find({ user: userId });
+    const products = await Product.find({ user: userId }).exec();
     console.log('Products found:', products.length);
-    localStorage.setItem('products', products.length);
     res.json(products);
   } catch (error) {
-    console.error('Error fetching user products:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching user products:', error.message);
+    res.status(500).json({ 
+      message: 'Error fetching products', 
+      error: error.message 
+    });
   }
 });
 
