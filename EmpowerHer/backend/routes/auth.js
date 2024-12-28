@@ -9,10 +9,10 @@ require('dotenv').config();
 // Validation middleware
 const registerValidation = [
   body('email').isEmail().normalizeEmail(),
-  body('password').isLength({ min: 8 }),
+  body('password').isLength({ min: 6 }), // Reduced from 8 to 6
   body('name').trim().notEmpty(),
-  body('dateOfBirth').isISO8601().toDate(),
-  body('businessDetails').notEmpty()
+  body('dateOfBirth').isDate().optional({ nullable: true }),
+  body('businessDetails').optional().isObject()
 ];
 
 const loginValidation = [
@@ -39,8 +39,8 @@ router.post('/register', registerValidation, async (req, res) => {
     user = new User({
       name,
       email,
-      dateOfBirth,
-      businessDetails,
+      dateOfBirth: dateOfBirth || null,
+      businessDetails: businessDetails || {},
       password,
       status: 'pending'  // Initially set user status to 'pending' until approved by admin
     });
