@@ -96,7 +96,7 @@ router.post('/login', loginValidation, async (req, res) => {
      secretKey,
       { 
         algorithm: 'HS256',
-        expiresIn: '24h'  // Match with auth middleware maxAge
+        expiresIn: '7d'// Match with auth middleware maxAge
       }
     );
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
+const adminRoutes = require('./routes/admin')
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const courseRoutes = require('./routes/courses');
@@ -37,6 +37,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/mentorship', mentorshipRoutes);
 app.use('/api/users', userRoutes); 
+app.use('/api/admin', adminRoutes); 
 
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

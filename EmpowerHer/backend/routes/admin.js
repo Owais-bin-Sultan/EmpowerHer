@@ -1,7 +1,6 @@
+// adminRoutes.js
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
-const isAdmin = require('../middleware/IsAdmin');
 const User = require('../models/User');
 
 // Request logger middleware
@@ -12,8 +11,8 @@ const requestLogger = (req, res, next) => {
 
 router.use(requestLogger);
 
-// Get all users (admin only)
-router.get('/users', auth, isAdmin, async (req, res) => {
+// Get all users (removed auth middleware temporarily)
+router.get('/users', async (req, res) => {
     try {
         console.log('Fetching all users');
         const users = await User.find().select('-password');
@@ -25,25 +24,8 @@ router.get('/users', auth, isAdmin, async (req, res) => {
     }
 });
 
-// Update user role (admin only)
-router.put('/users/:id/role', auth, isAdmin, async (req, res) => {
-    try {
-        console.log(`Updating role for user ${req.params.id} to ${req.body.role}`);
-        const user = await User.findByIdAndUpdate(
-            req.params.id,
-            { role: req.body.role },
-            { new: true }
-        ).select('-password');
-        console.log('Updated user:', user);
-        res.json(user);
-    } catch (error) {
-        console.error('Error updating user role:', error);
-        res.status(500).json({ message: 'Server Error' });
-    }
-});
-
-// Update user approval status (admin only)
-router.put('/users/:id/approve', auth, isAdmin, async (req, res) => {
+// Update user approval status (removed auth middleware temporarily)
+router.put('/users/:id/approve', async (req, res) => {
     try {
         console.log(`Updating approval for user ${req.params.id} to ${req.body.approved}`);
         const user = await User.findByIdAndUpdate(
