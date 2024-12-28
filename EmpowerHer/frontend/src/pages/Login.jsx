@@ -23,19 +23,12 @@ const Login = ({ onLogin }) => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      if (!validateInputs()) {
-        setLoading(false);
-        return;
-      }
-
-      console.log('Attempting login:', { email });
-
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
@@ -51,39 +44,44 @@ const Login = ({ onLogin }) => {
       console.log('Server response:', data);
 
       if (!response.ok) {
-        setError(data.message || 'Login failed');
-        setLoading(false);
-        return;
+        throw new Error(data.message || 'Login failed');
       }
 
-      // Transform flat response into expected structure
-      const userData = {
-        token: data.token,
-        user: {
-          id: data.userId,
-          name: data.name,
-          email: data.email,
-          role: data.role || 'user'  // Set default role if not provided
-        }
-      };
+      // Handle both response formats
+      const userId = data.user?.id || data.userId;
+      const userName = data.user?.name || data.name;
+      const userEmail = data.user?.email || data.email;
+      const userRole = data.user?.role || 'user';
 
-      try {
-        localStorage.setItem('token', userData.token);
-        localStorage.setItem('user', JSON.stringify(userData.user));
-        localStorage.setItem('userId',userData.user.id);
-        console.log('Userid:',userData.user.id);
-        console.log('Role:',userData.user.role);
-
-        if (onLogin) {
-          onLogin(userData.user);
-        }
-
-        // Navigate based on role
-        navigate(userData.user.role === 'admin' ? '/admin-dashboard' : '/marketplace');
-      } catch (err) {
-        setError('Error processing login');
-        setLoading(false);
+      if (!userId) {
+        throw new Error('Invalid server response: missing user ID');
       }
+
+      // Store user data
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('user', JSON.stringify({
+        id: userId,
+        name: userName,
+        email: userEmail,
+        role: userRole
+      }));
+
+      console.log('Login successful:', {
+        userId,
+        userName
+      });
+
+      if (onLogin) {
+        onLogin({
+          id: userId,
+          name: userName,
+          email: userEmail,
+          role: userRole
+        });
+      }
+
+      navigate(userRole === 'admin' ? '/admin-dashboard' : '/marketplace');
 
     } catch (err) {
       console.error('Login error:', err);
@@ -102,7 +100,7 @@ const Login = ({ onLogin }) => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleLogin}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address

@@ -3,6 +3,7 @@ const router = express.Router();
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
 const mongoose = require('mongoose');
+const secretKey = "yourSecretKey";
 
 // Get all products
 router.get('/', async (req, res) => {

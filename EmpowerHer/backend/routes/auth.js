@@ -89,15 +89,19 @@ router.post('/login', loginValidation, async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({ message: 'Incorrect Password' });
     }
+    const secretKey = "yourSecretKey";
 
     const token = jwt.sign(
       { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
+     secretKey,
+      { 
+        algorithm: 'HS256',
+        expiresIn: '24h'  // Match with auth middleware maxAge
+      }
     );
 
-    // Restructured response to match client expectations
-    res.json({
+    // Ensure consistent response structure
+    const response = {
       token,
       user: {
         id: user._id,
@@ -105,7 +109,10 @@ router.post('/login', loginValidation, async (req, res) => {
         email: user.email,
         role: user.role || 'user'
       }
-    });
+    };
+
+    console.log('Login response:', response);
+    res.json(response);
 
   } catch (error) {
     console.error('Login error:', error);

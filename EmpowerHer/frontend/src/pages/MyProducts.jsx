@@ -37,30 +37,41 @@ const MyProducts = () => {
       const token = localStorage.getItem("token");
       const userId = localStorage.getItem("userId");
 
-      console.log("Starting fetch with userId:", userId);
+      if (!token || !userId) {
+        localStorage.clear(); // Clear all auth data
+        navigate('/login');
+        throw new Error('Authentication required');
+      }
 
       const response = await fetch(
         `http://localhost:5000/api/products/my-products?user=${userId}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
         }
       );
 
+      if (!response.ok) {
+        if (response.status === 401) {
+          localStorage.clear(); // Clear all auth data
+          navigate('/login');
+          throw new Error('Session expired. Please login again.');
+        }
+        throw new Error('Failed to fetch products');
+      }
+
       const data = await response.json();
-      console.log("API Response:", data);
-      localStorage.setItem("products", JSON.stringify(data));
-
-      // Ensure we're getting an array
-      const productArray = Array.isArray(data) ? data : 
-                          data.products ? data.products : 
-                          [];
-
-      console.log("Processed products array:", productArray);
-      setProducts(productArray);
+      setProducts(Array.isArray(data) ? data : []);
+      setError(null);
 
     } catch (error) {
       console.error("Fetch error:", error);
       setError(error.message);
+      if (error.message.includes('Session expired') || error.message.includes('Authentication required')) {
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
     }

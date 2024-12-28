@@ -17,15 +17,18 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
+      console.log('Fetching users...');
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/users', {
+      const response = await axios.get('http://localhost:5000/api/admin/users', {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
+      console.log('Users fetched:', response.data);
       setUsers(response.data);
       setError(null);
     } catch (err) {
+      console.error('Error fetching users:', err);
       setError(err.response?.data?.message || 'Error fetching users');
     } finally {
       setLoading(false);
@@ -34,7 +37,8 @@ const AdminDashboard = () => {
 
   const handleApproval = async (userId, approve) => {
     try {
-      await axios.put(`http://localhost:5000/api/users/${userId}/approve`, 
+      console.log(`Updating approval status for user ${userId} to ${approve}`);
+      const response = await axios.put(`http://localhost:5000/api/admin/users/${userId}/approve`, 
         { approved: approve },
         {
           headers: {
@@ -42,8 +46,10 @@ const AdminDashboard = () => {
           }
         }
       );
+      console.log('Approval update response:', response.data);
       fetchUsers();
     } catch (err) {
+      console.error('Error updating approval:', err);
       setError(err.response?.data?.message || 'Error updating user approval');
     }
   };

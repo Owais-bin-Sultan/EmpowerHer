@@ -1,0 +1,17 @@
+[{
+  "_id": {
+    "$oid": "676fb6ccb0992369ad03250f"
+  },
+  "name": "MOK",
+  "email": "mokay5226@gmail.com",
+  "password": "$2a$10$AOUWn1uwH6vQ1mWtG0WgfO1VS0SgZ59ziWzxbILQ9jpuleLH8wBAS",
+  "role": "admin",
+  "approved": true,
+  "createdAt": {
+    "$date": "2024-12-28T08:29:00.229Z"
+  },
+  "updatedAt": {
+    "$date": "2024-12-28T08:29:00.229Z"
+  },
+  "__v": 0
+}]

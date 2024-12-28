@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { assets } from '../assets/frontend_assets/assets';
 
-function Navbar({ isLoggedIn, onLogout }) {
+function Navbar({ isLoggedIn, onLogout, userRole }) {
   // const { cart } = useCart();
   // const cartItemsCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -10,11 +10,18 @@ function Navbar({ isLoggedIn, onLogout }) {
   <nav className="bg-purple-600 text-white shadow-md">
     <div className="container mx-auto px-4">
       <div className='flex items-center justify-between py-5 font-medium'>
-        <Link to="/">
+        <Link to={userRole === 'admin' ? '/admin-dashboard' : '/'}>
           <img src={assets.logo} className='w-36' alt="EmpowerHer" />
         </Link>
         <ul className='flex gap-5 text-sm text-gray-200'>
-          <li><Link to="/" className="hover:text-white">Home</Link></li>
+          <li>
+            <Link 
+              to={userRole === 'admin' ? '/admin-dashboard' : '/'} 
+              className="hover:text-white"
+            >
+              Home
+            </Link>
+          </li>
           <li><Link to="/marketplace" className="hover:text-white">Marketplace</Link></li>
               
           {isLoggedIn ? (
@@ -46,4 +53,3 @@ function Navbar({ isLoggedIn, onLogout }) {
 }
 
 export default Navbar;
-

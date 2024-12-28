@@ -42,7 +42,11 @@ function AppContent() {
 
   return (
     <div className="App">
-      <Navbar isLoggedIn={isLoggedIn} onLogout={handleLogout} />
+      <Navbar 
+        isLoggedIn={isLoggedIn} 
+        onLogout={handleLogout}
+        userRole={user?.role} 
+      />
       <Routes>
         <Route path="/" element={<Home isLoggedIn={isLoggedIn} user={user} />} />
         <Route path="/marketplace" element={<Marketplace />} />
@@ -81,4 +85,3 @@ function App() {
 }
 
 export default App;
-

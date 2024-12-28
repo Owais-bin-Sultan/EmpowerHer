@@ -1,18 +1,28 @@
 const jwt = require('jsonwebtoken');
+const secretKey = "yourSecretKey";
+
 
 module.exports = function(req, res, next) {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  console.log('Token:', token);
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token, authorization denied' });
-  }
-
   try {
-    const decoded = jwt.verify(token, 'your_jwt_secret');
-    req.user = { _id: decoded.userId }; // Changed to match token payload
+    const authHeader = req.header('Authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Invalid authorization header format' });
+    }
+
+    const token = authHeader.split(' ')[1];
+    
+    const decoded = jwt.verify(token, secretKey);
+    
+    req.user = { _id: decoded.userId };
     next();
+    
   } catch (err) {
-    res.status(401).json({ message: 'Token is not valid' });
+    console.error('Auth Error:', {
+      name: err.name,
+      message: err.message,
+      token: 'present'
+    });
+    res.status(401).json({ message: 'Session expired. Please login again.' });
   }
 };
