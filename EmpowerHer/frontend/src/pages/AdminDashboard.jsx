@@ -153,72 +153,83 @@ const AdminDashboard = () => {
     );
   }
 
-  const TabButton = ({ tab, currentTab, icon: Icon, label }) => (
+  const TabButton = ({ tab, currentTab, icon: Icon, label, count }) => (
     <button
       onClick={() => setActiveTab(tab)}
-      className={`flex items-center px-6 py-3 rounded-lg transition-all duration-300 ${
+      className={`flex items-center px-8 py-4 rounded-xl transition-all duration-300 ease-in-out transform hover:scale-105 ${
         currentTab === tab
-          ? "bg-primary text-white shadow-lg"
-          : "hover:bg-primary/10"
+          ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200 scale-105"
+          : "bg-white hover:bg-indigo-50"
       }`}
     >
       <Icon
-        className={`w-5 h-5 ${
-          currentTab === tab ? "text-white" : "text-primary"
-        } mr-2`}
+        className={`w-6 h-6 ${
+          currentTab === tab ? "text-white" : "text-indigo-600"
+        } mr-3`}
       />
-      <span
-        className={`font-medium ${
-          currentTab === tab ? "text-white" : "text-gray-700"
-        }`}
-      >
-        {label}
-      </span>
+      <div className="flex flex-col items-start">
+        <span
+          className={`font-semibold ${
+            currentTab === tab ? "text-white" : "text-gray-800"
+          }`}
+        >
+          {label}
+        </span>
+        <span
+          className={`text-sm ${
+            currentTab === tab ? "text-indigo-100" : "text-indigo-600"
+          }`}
+        >
+          {count} {label.toLowerCase()}
+        </span>
+      </div>
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50 p-8">
-      <Card className="w-full max-w-6xl mx-auto shadow-xl rounded-xl overflow-hidden backdrop-blur-sm bg-white/90">
-        <CardHeader className="flex flex-col space-y-4 p-8 border-b bg-white/50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 p-8">
+      <Card className="w-full max-w-7xl mx-auto shadow-2xl rounded-2xl overflow-hidden backdrop-blur-sm bg-white/90 border border-indigo-100">
+        <CardHeader className="flex flex-col space-y-6 p-8 border-b border-indigo-100 bg-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="p-3 bg-primary/10 rounded-lg">
+              <div className="p-3 bg-indigo-100 rounded-lg">
                 {activeTab === "users" ? (
-                  <Users className="w-8 h-8 text-primary" />
+                  <Users className="w-8 h-8 text-indigo-600" />
                 ) : (
-                  <Package className="w-8 h-8 text-primary" />
+                  <Package className="w-8 h-8 text-indigo-600" />
                 )}
               </div>
               <div>
-                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
                   Admin Dashboard
                 </CardTitle>
-                <p className="text-gray-500">Manage users and products</p>
+                <p className="text-gray-600">Manage users and products</p>
               </div>
             </div>
             <Button
               onClick={activeTab === "users" ? fetchUsers : fetchProducts}
               variant="outline"
               size="sm"
-              className="hover:shadow-lg transition-all duration-300 ease-in-out hover:scale-105"
+              className="border-indigo-200 hover:border-indigo-300 hover:bg-indigo-50 text-indigo-600"
             >
               <RefreshCw className="w-4 h-4 mr-2" /> Refresh
             </Button>
           </div>
 
-          <div className="flex space-x-4">
+          <div className="flex space-x-6 mt-4">
             <TabButton
               tab="users"
               currentTab={activeTab}
               icon={Users}
               label="Users"
+              count={users.length}
             />
             <TabButton
               tab="products"
               currentTab={activeTab}
               icon={Package}
               label="Products"
+              count={products.length}
             />
           </div>
         </CardHeader>
@@ -226,57 +237,46 @@ const AdminDashboard = () => {
         <CardContent className="p-8">
           {activeTab === "users" ? (
             users.length === 0 ? (
-              <div className="text-center py-16">
-                <Users className="w-16 h-16 mx-auto text-gray-400 mb-4 animate-pulse" />
-                <p className="text-gray-500 text-xl font-medium">
-                  No users found
-                </p>
+              <div className="text-center py-20">
+                <Users className="w-20 h-20 mx-auto text-gray-400 mb-6 animate-pulse" />
+                <p className="text-gray-500 text-2xl font-medium">No users found</p>
+                <p className="text-gray-400 mt-2">User data will appear here once available</p>
               </div>
             ) : (
-              <div className="rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+              <div className="rounded-xl overflow-hidden border border-indigo-100 shadow-lg bg-white">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-gray-50/50">
-                      <TableHead className="font-bold text-gray-700 py-4">
-                        Name
-                      </TableHead>
-                      <TableHead className="font-bold text-gray-700">
-                        Email
-                      </TableHead>
-                      <TableHead className="font-bold text-gray-700">
-                        Status
-                      </TableHead>
-                      <TableHead className="font-bold text-gray-700">
-                        Actions
-                      </TableHead>
+                    <TableRow className="bg-indigo-50/50">
+                      <TableHead className="font-bold text-indigo-900 py-5 px-6">Name</TableHead>
+                      <TableHead className="font-bold text-indigo-900 px-6">Email</TableHead>
+                      <TableHead className="font-bold text-indigo-900 px-6">Status</TableHead>
+                      <TableHead className="font-bold text-indigo-900 px-6">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {users.map((user) => (
                       <TableRow
                         key={user._id}
-                        className="hover:bg-gray-50/80 transition-colors duration-200"
+                        className="hover:bg-indigo-50/30 transition-colors duration-200"
                       >
-                        <TableCell className="font-medium text-gray-900">
+                        <TableCell className="font-medium text-gray-900 py-4 px-6">
                           {user.name}
                         </TableCell>
-                        <TableCell className="text-gray-600">
-                          {user.email}
-                        </TableCell>
-                        <TableCell>
+                        <TableCell className="text-gray-600 px-6">{user.email}</TableCell>
+                        <TableCell className="px-6">
                           <Badge
                             variant={user.approved ? "success" : "warning"}
-                            className="px-4 py-1 rounded-full font-medium"
+                            className="px-4 py-1.5 rounded-full font-medium text-sm"
                           >
                             {user.approved ? "Approved" : "Pending"}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-6">
                           {!user.approved ? (
                             <Button
                               onClick={() => handleApproval(user._id, true)}
                               size="sm"
-                              className="hover:shadow-lg transition-all duration-300 ease-in-out hover:scale-105"
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all duration-300"
                             >
                               <CheckCircle className="w-4 h-4 mr-2" /> Approve
                             </Button>
@@ -285,7 +285,7 @@ const AdminDashboard = () => {
                               onClick={() => handleApproval(user._id, false)}
                               size="sm"
                               variant="destructive"
-                              className="hover:shadow-lg transition-all duration-300 ease-in-out hover:scale-105"
+                              className="bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg transition-all duration-300"
                             >
                               <XCircle className="w-4 h-4 mr-2" /> Revoke
                             </Button>
@@ -298,35 +298,24 @@ const AdminDashboard = () => {
               </div>
             )
           ) : (
-            <div className="rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+            <div className="rounded-xl overflow-hidden border border-gray-100 shadow-lg bg-white">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gray-50/50">
-                    <TableHead className="font-bold text-gray-700 py-4">
-                      Product Name
-                    </TableHead>
-                    <TableHead className="font-bold text-gray-700">
-                      Price
-                    </TableHead>
-                    <TableHead className="font-bold text-gray-700">
-                      Category
-                    </TableHead>
-                    <TableHead className="font-bold text-gray-700">
-                      Created By
-                    </TableHead>
-                    <TableHead className="font-bold text-gray-700">
-                      Status
-                    </TableHead>
+                  <TableRow className="bg-gray-50/80">
+                    <TableHead className="font-bold text-gray-700 py-5 px-6">Product</TableHead>
+                    <TableHead className="font-bold text-gray-700 px-6">Price</TableHead>
+                    <TableHead className="font-bold text-gray-700 px-6">Category</TableHead>
+                    <TableHead className="font-bold text-gray-700 px-6">Seller</TableHead>
+                    <TableHead className="font-bold text-gray-700 px-6">Status</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {products.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
-                        <Package className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-                        <p className="text-gray-500 text-lg">
-                          No products found
-                        </p>
+                      <TableCell colSpan={5} className="text-center py-20">
+                        <Package className="w-20 h-20 mx-auto text-gray-400 mb-6" />
+                        <p className="text-gray-500 text-2xl font-medium">No products found</p>
+                        <p className="text-gray-400 mt-2">Products will appear here once available</p>
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -335,32 +324,26 @@ const AdminDashboard = () => {
                         key={product._id}
                         className="hover:bg-gray-50/80 transition-colors duration-200"
                       >
-                        <TableCell className="font-medium text-gray-900">
+                        <TableCell className="font-medium text-gray-900 py-4 px-6">
                           {product.name}
                         </TableCell>
-                        <TableCell className="text-gray-600">
-                          ${product.price}
+                        <TableCell className="text-gray-600 px-6">
+                          <span className="font-semibold">${product.price}</span>
                         </TableCell>
-                        <TableCell className="text-gray-600">
-                          {product.category}
+                        <TableCell className="text-gray-600 px-6">
+                          <span className="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                            {product.category}
+                          </span>
                         </TableCell>
-                        <TableCell className="text-gray-600">
+                        <TableCell className="text-gray-600 px-6">
                           {product.user?.name || "Unknown"}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="px-6">
                           <Badge
-                            variant={
-                              typeof product.stock === "number" &&
-                              product.stock > 0
-                                ? "success"
-                                : "destructive"
-                            }
-                            className="px-4 py-1 rounded-full font-medium"
+                            variant={product.stock > 0 ? "success" : "destructive"}
+                            className="px-4 py-1.5 rounded-full font-medium text-sm"
                           >
-                            {typeof product.stock === "number" &&
-                            product.stock > 0
-                              ? "In Stock"
-                              : "Out of Stock"}
+                            {product.stock > 0 ? `In Stock (${product.stock})` : "Out of Stock"}
                           </Badge>
                         </TableCell>
                       </TableRow>
