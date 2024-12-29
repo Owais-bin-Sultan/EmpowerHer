@@ -1,0 +1,134 @@
+					Category: Textiles
+
+Product Name: Handwoven Woolen Shawl
+Description: A cozy and intricately designed shawl made with pure wool.
+Price: PKR 3,200
+Stock: 15
+
+Product Name: Embroidered Cushion Covers (Set of 4)
+Description: Vibrant cushion covers adorned with traditional rural embroidery.
+Price: PKR 1,500
+Stock: 30
+
+Product Name: Block-Printed Cotton Saree
+Description: Lightweight cotton saree with exquisite block-printed patterns.
+Price: PKR 6,000
+Stock: 10
+
+Product Name: Patchwork Bedspread
+Description: A colorful bedspread made from a mix of recycled textiles, showcasing patchwork artistry.
+Price: PKR 4,800
+Stock: 8
+
+Product Name: Silk Scarves (Set of 3)
+Description: Luxurious silk scarves in assorted vibrant colors.
+Price: PKR 7,500
+Stock: 12
+
+					Category: Handicrafts
+
+Product Name: Wooden Carved Jewelry Box
+Description: A beautifully hand-carved wooden box for storing jewelry or keepsakes.
+Price: PKR 2,000
+Stock: 20
+
+Product Name: Clay Pottery Set (Jug and 4 Glasses)
+Description: Rustic clay pottery ideal for serving cool drinks.
+Price: PKR 1,200
+Stock: 25
+
+Product Name: Hand-Painted Wall Hangings
+Description: Unique wall decorations painted by local artisans.
+Price: PKR 1,800
+Stock: 18
+
+Product Name: Woven Cane Basket
+Description: A multi-purpose basket made with durable cane, perfect for storage.
+Price: PKR 850
+Stock: 40
+
+Product Name: Handcrafted Wooden Toys (Set of 3)
+Description: Eco-friendly wooden toys designed for children.
+Price: PKR 1,500
+Stock: 15
+
+					Category: Food Products
+
+Product Name: Organic Honey (500g Jar)
+Description: Pure and unprocessed honey sourced from rural bee farms.
+Price: PKR 1,200
+Stock: 50
+
+Product Name: Homemade Pickles (1kg)
+Description: Spicy and tangy pickles made from locally grown produce.
+Price: PKR 600
+Stock: 35
+
+Product Name: Millet Flour (5kg Bag)
+Description: Freshly milled millet flour, ideal for making traditional bread.
+Price: PKR 750
+Stock: 60
+
+Product Name: Dried Fruits Mix (250g)
+Description: A nutritious mix of dried fruits, including apricots and raisins.
+Price: PKR 1,000
+Stock: 45
+
+Product Name: Herbal Tea Blend (200g)
+Description: A soothing mix of herbs and spices for a refreshing tea experience.
+Price: PKR 900
+Stock: 20
+
+					Category: Jewelry
+
+Product Name: Beaded Necklace
+Description: A stunning necklace made with colorful hand-strung beads.
+Price: PKR 2,500
+Stock: 25
+
+Product Name: Silver Anklet Pair
+Description: Delicately designed anklets crafted from pure silver.
+Price: PKR 4,000
+Stock: 10
+
+Product Name: Brass Bangles (Set of 6)
+Description: Handcrafted brass bangles with intricate designs.
+Price: PKR 1,200
+Stock: 30
+
+Product Name: Stone-Studded Earrings
+Description: Earrings featuring semi-precious stones in a modern design.
+Price: PKR 3,800
+Stock: 15
+
+Product Name: Handwoven Thread Bracelet
+Description: A simple yet stylish bracelet made with colorful threads.
+Price: PKR 500
+Stock: 50
+
+					Category: Other
+
+Product Name: Handmade Soy Candles (Set of 2)
+Description: Eco-friendly candles made with natural soy wax and essential oils.
+Price: PKR 1,300
+Stock: 20
+
+Product Name: Herbal Skincare Kit
+Description: A set of herbal skincare products including soap, lotion, and scrub.
+Price: PKR 2,800
+Stock: 10
+
+Product Name: Bamboo Plant Holder
+Description: A stylish plant holder made from sustainable bamboo.
+Price: PKR 1,000
+Stock: 15
+
+Product Name: Handwoven Picnic Mat
+Description: Lightweight and durable mat, perfect for outdoor picnics.
+Price: PKR 1,800
+Stock: 25
+
+Product Name: Handmade Diary with Recycled Paper
+Description: A beautifully designed diary made with eco-friendly materials.
+Price: PKR 900
+Stock: 35

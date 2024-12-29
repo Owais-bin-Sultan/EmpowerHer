@@ -255,14 +255,14 @@ const AdminDashboard = () => {
                         <TableCell className="text-gray-600">
                           {product.user?.name || 'Unknown'}
                         </TableCell>
-                        <TableCell>
-                          <Badge 
-                            variant={product.Stock ? "success" : "destructive"}
-                            className="px-4 py-1 rounded-full font-medium"
-                          >
-                            {product.Stock ? "In Stock" : "Out of Stock"}
-                          </Badge>
-                        </TableCell>
+                                            <TableCell>
+                        <Badge 
+                          variant={typeof product.Stock === 'number' && product.Stock > 0 ? "success" : "destructive"}
+                          className="px-4 py-1 rounded-full font-medium"
+                        >
+                          {typeof product.Stock === 'number' && product.Stock > 0 ? "In Stock" : "Out of Stock"}
+                        </Badge>
+                      </TableCell>
                       </TableRow>
                     ))
                   )}
