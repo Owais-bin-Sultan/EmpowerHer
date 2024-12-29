@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, CardContent, CardHeader, CardTitle } from "../components/CustomUI";
 import { Mail, Phone, MapPin, Calendar, Building, Edit, Award, Package, BookOpen, Users2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     fetchUserProfile();
-  }, []);
+    // Show update success message if returning from settings
+    if (location.state?.updated) {
+      alert('Profile updated successfully!');
+      // Clear the state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   const fetchUserProfile = async () => {
     try {
@@ -49,8 +56,29 @@ const Profile = () => {
     }
   };
 
+  const handleEditProfile = () => {
+    navigate('/account-settings', { 
+      state: { 
+        returnTo: '/profile',
+        userData: user 
+      }
+    });
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
   }
 
   if (error) {
@@ -67,16 +95,26 @@ const Profile = () => {
         {/* Main Profile Card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Card className="md:col-span-1 shadow-lg hover:shadow-xl transition-shadow duration-300">
-            <CardHeader className="text-center">
-              <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-purple-100 shadow-inner">
+            <CardHeader className="text-center relative">
+              <div className="w-32 h-32 mx-auto rounded-full overflow-hidden border-4 border-purple-100 shadow-inner bg-white">
                 <img 
-                  src={user.profileImage || "/placeholder.svg?height=128&width=128"} 
-                  alt={user.name} 
+                  src={user.profileImage || "/placeholder.svg"} 
+                  alt={user.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = "/placeholder.svg";
+                  }}
                 />
               </div>
-              <CardTitle className="mt-4 text-2xl font-bold text-gray-800">{user.name}</CardTitle>
-              <p className="text-purple-600 font-medium">{user.businessDetails?.name}</p>
+              <CardTitle className="mt-4 text-2xl font-bold text-gray-800">
+                {user.name || 'No Name'}
+              </CardTitle>
+              <p className="text-purple-600 font-medium">
+                {user.businessDetails?.name || 'Business Name Not Set'}
+              </p>
+              <p className="text-sm text-gray-500">
+                Member since {formatDate(user.createdAt)}
+              </p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
@@ -99,7 +137,7 @@ const Profile = () => {
               </div>
               <Button 
                 className="w-full mt-6 bg-purple-600 hover:bg-purple-700 transition-colors flex items-center justify-center space-x-2"
-                onClick={() => navigate('/account-settings')}
+                onClick={handleEditProfile}
               >
                 <Edit className="w-4 h-4" />
                 <span>Edit Profile</span>
@@ -113,13 +151,30 @@ const Profile = () => {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Building className="w-6 h-6 text-purple-600" />
-                  <span>Business Details</span>
+                  <span>Business Overview</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 leading-relaxed">
-                  {user.businessDetails?.description || 'No business description provided'}
-                </p>
+              <CardContent className="space-y-4">
+                <div className="prose max-w-none">
+                  <p className="text-gray-600 leading-relaxed">
+                    {user.businessDetails?.description || 
+                     'Add a description of your business to help others understand what you do.'}
+                  </p>
+                </div>
+                {/* Add business metrics/statistics here */}
+                <div className="pt-4 border-t border-gray-100">
+                  <h4 className="text-sm font-medium text-gray-500 mb-2">Business Details</h4>
+                  <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Location</dt>
+                      <dd className="text-sm text-gray-900">{user.address || 'Not specified'}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-sm font-medium text-gray-500">Contact</dt>
+                      <dd className="text-sm text-gray-900">{user.phone || 'Not specified'}</dd>
+                    </div>
+                  </dl>
+                </div>
               </CardContent>
             </Card>
 
