@@ -9,6 +9,9 @@ export const Button = ({ children, ...props }) => (
 export const Input = ({ ...props }) => (
   <input {...props} className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" />
 );
+export const Spinner = ({ className }) => (
+  <div className={`animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 ${className}`} />
+);  
 
 export const Textarea = ({ ...props }) => (
   <textarea {...props} className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500" />

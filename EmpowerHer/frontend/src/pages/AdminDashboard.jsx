@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Badge } from "../components/CustomUI";
 import { CheckCircle, XCircle, Users, RefreshCw, Package } from 'lucide-react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -12,6 +13,7 @@ const AdminDashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (activeTab === 'users') {
@@ -21,16 +23,32 @@ const AdminDashboard = () => {
     }
   }, [activeTab]);
 
+  const getAuthConfig = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No auth token found');
+    }
+    return {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+  };
+
   const fetchUsers = async () => {
     try {
       console.log('Fetching users...');
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/admin/users');
+      const response = await axios.get('http://localhost:5000/api/admin/users', getAuthConfig());
       console.log('Users fetched:', response.data);
       setUsers(response.data);
       setError(null);
     } catch (err) {
       console.error('Error fetching users:', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
       setError('Error fetching users');
     } finally {
       setLoading(false);
@@ -41,7 +59,8 @@ const AdminDashboard = () => {
     try {
       console.log(`Updating approval status for user ${userId} to ${approve}`);
       await axios.put(`http://localhost:5000/api/admin/users/${userId}/approve`, 
-        { approved: approve }
+        { approved: approve },
+        getAuthConfig()
       );
       
       // Update local state instead of fetching again
@@ -52,6 +71,10 @@ const AdminDashboard = () => {
       );
     } catch (err) {
       console.error('Error updating approval:', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
       setError('Error updating user approval');
     }
   };
@@ -59,11 +82,15 @@ const AdminDashboard = () => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/products');
+      const response = await axios.get('http://localhost:5000/api/products', getAuthConfig());
       setProducts(response.data);
       setError(null);
     } catch (err) {
       console.error('Error fetching products:', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
       setError('Error fetching products');
     } finally {
       setLoading(false);

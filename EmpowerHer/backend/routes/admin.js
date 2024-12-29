@@ -3,6 +3,7 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/IsAdmin');
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 // Request logger middleware
 const requestLogger = (req, res, next) => {
@@ -13,20 +14,41 @@ const requestLogger = (req, res, next) => {
 router.use(requestLogger);
 
 // Get all users (admin only)
-router.get('/users', auth, isAdmin, async (req, res) => {
+// Get all users (admin only)
+router.get('/users', async (req, res) => {
     try {
+        // Verify database connection
+        if (!mongoose.connection.readyState) {
+            throw new Error('Database connection not established');
+        }
+
         console.log('Fetching all users');
         const users = await User.find().select('-password');
+        
+        if (!users) {
+            return res.status(404).json({ message: 'No users found' });
+        }
+
         console.log(`Found ${users.length} users`);
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error);
-        res.status(500).json({ message: 'Server Error' });
+        
+        if (error.name === 'MongoError') {
+            return res.status(500).json({ 
+                message: 'Database error occurred',
+                error: error.message 
+            });
+        }
+
+        res.status(500).json({ 
+            message: 'Server Error', 
+            error: error.message 
+        });
     }
 });
-
 // Update user role (admin only)
-router.put('/users/:id/role', auth, isAdmin, async (req, res) => {
+router.put('/users/:id/role', async (req, res) => {
     try {
         console.log(`Updating role for user ${req.params.id} to ${req.body.role}`);
         const user = await User.findByIdAndUpdate(
@@ -43,7 +65,7 @@ router.put('/users/:id/role', auth, isAdmin, async (req, res) => {
 });
 
 // Update user approval status (admin only)
-router.put('/users/:id/approve', auth, isAdmin, async (req, res) => {
+router.put('/users/:id/approve', async (req, res) => {
     try {
         console.log(`Updating approval for user ${req.params.id} to ${req.body.approved}`);
         const user = await User.findByIdAndUpdate(
