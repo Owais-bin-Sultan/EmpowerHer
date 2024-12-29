@@ -17,12 +17,32 @@ const Checkout = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Here you would typically send the order to your backend
-    console.log("Order submitted:", { ...formData, cart });
-    clearCart();
-    navigate("/thank-you");
+    try {
+      const response = await fetch('http://localhost:5000/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          items: cart,
+          totalAmount: total,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to place order');
+      }
+
+      await response.json();
+      clearCart();
+      navigate('/thank-you');
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('Failed to place order. Please try again.');
+    }
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -35,7 +55,7 @@ const Checkout = () => {
         <div>
           <h2 className="text-2xl font-semibold mb-4">Order Summary</h2>
           {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center mb-2">
+            <div key={`${item.id}-${item.name}`} className="flex justify-between items-center mb-2">
               <span>{item.name} x {item.quantity}</span>
               <span>Rs. {item.price * item.quantity}</span>
             </div>
@@ -135,4 +155,5 @@ const Checkout = () => {
 };
 
 export default Checkout;
+
 

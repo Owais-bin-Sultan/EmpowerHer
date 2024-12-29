@@ -7,6 +7,7 @@ const productRoutes = require('./routes/products');
 const courseRoutes = require('./routes/courses');
 const mentorshipRoutes = require('./routes/mentorship');
 const userRoutes = require('./routes/users'); 
+const checkoutRoutes = require('./routes/checkout');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/courses', courseRoutes);
 app.use('/api/mentorship', mentorshipRoutes);
 app.use('/api/users', userRoutes); 
 app.use('/api/admin', adminRoutes); 
+app.use('/api/checkout', checkoutRoutes);
 
 const server = app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
