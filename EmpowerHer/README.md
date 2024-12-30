@@ -1,4 +1,4 @@
-# EmpowerHer: A Web Platform for Rural Women Entrepreneurs in Pakistan
+# FOrever: A Web Platform for Rural Women Entrepreneurs in Pakistan
 
 About the Project
 
