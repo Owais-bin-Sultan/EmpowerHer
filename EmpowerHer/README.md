@@ -1,8 +1,8 @@
-# FOrever: A Web Platform for Rural Women Entrepreneurs in Pakistan
+# Forever: A Web Platform for Rural Women Entrepreneurs in Pakistan
 
 About the Project
 
-EmpowerHer is a web-based platform aimed at supporting and empowering women entrepreneurs in rural Pakistan. The platform addresses challenges such as access to marketplaces, skills development, and mentorship opportunities. Using the MERN stack (MongoDB, Express, React, Node.js), it provides a dynamic, scalable, and user-friendly web solution. The platform prioritizes user-centric design, accessibility for low-literacy users, and usability on low-end devices.
+Forever is a web-based platform aimed at supporting and empowering women entrepreneurs in rural Pakistan. The platform addresses challenges such as access to marketplaces, skills development, and mentorship opportunities. Using the MERN stack (MongoDB, Express, React, Node.js), it provides a dynamic, scalable, and user-friendly web solution. The platform prioritizes user-centric design, accessibility for low-literacy users, and usability on low-end devices.
 
 Key Features
 
